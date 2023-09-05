@@ -17,3 +17,16 @@ keywords: set = set(['function', 'integer', 'bool', 'real', 'if', 'else', 'endif
 
 # A set containing every operator in RAT32F
 operators: set = set(['=', '==', '!=', '>', '<', '<=', '=>', '+', '-', '*', '/'])
+
+
+# This is an example of what I think a Lexer for our example input may look like
+# This is the example input we are working with:
+# while (fahr <= upper) a = 23.00; [* this is a sample *]
+
+class FSM:
+    def __init__(self):
+        self.symbols: set = {'whitespace', 'chr', 'int', 'dot', 'special', 'separator', 'operator', 'ignore'}
+        self.states: set = {'keyword', 'identifier', 'int', 'real', 'operator', 'accepted'}
+        
+
+example_input = r'while (fahr <= upper) a = 23.00; [* this is a sample *]'
