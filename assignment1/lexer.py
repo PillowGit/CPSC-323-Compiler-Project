@@ -2,6 +2,7 @@
 Written by:
 Esteban Escartin
 Roman Guillermo
+Jericho Montec
 
 This file contains the code for lexical analysis of a RAT32F source file.
 
@@ -17,3 +18,6 @@ keywords: set = set(['function', 'integer', 'bool', 'real', 'if', 'else', 'endif
 
 # A set containing every operator in RAT32F
 operators: set = set(['=', '==', '!=', '>', '<', '<=', '=>', '+', '-', '*', '/'])
+
+
+# This is my take on what a simple FSM could be with a sample input
