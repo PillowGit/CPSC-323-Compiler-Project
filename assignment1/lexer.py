@@ -100,8 +100,6 @@ class FSM:
         # New states depending on if our state is 'ignore'
         # Every state besides a new comment will be ignored here, so we can do this in 1 line using dict comprehension and a ternary statement
         self.table['ignore'] = {x : 'ignore' if x != 'closecomment' else 'valid' for x in self.symbols}
-
-        self.states: set = {'keyword', 'identifier', 'int', 'real', 'operator', 'valid', 'invalid', 'ignore'}
     
     def analyze(self, file_path: str):
         # Open the file and read/store its contents
