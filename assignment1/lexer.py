@@ -51,7 +51,7 @@ class FSM:
         self.table['identifier']['whitespace'] = 'valid'
         self.table['identifier']['chr'] = 'identifier'
         self.table['identifier']['int'] = 'identifier'
-        self.table['identifier']['dot'] = 'real'
+        self.table['identifier']['dot'] = 'invalid'
         self.table['identifier']['special'] = 'invalid'
         self.table['identifier']['separator'] = 'valid'
         self.table['identifier']['operator'] = 'operator'
@@ -108,10 +108,12 @@ class FSM:
         file_contents: str = ''
         with open(file_path, 'r') as f:
             file_contents = f.read()
-        print(file_contents)
-        print(self.accepting_states)
+        # TO DO
+        # Do a bunch of analysis on the text and stuff write logic blah blah
+
 
 # This library is just to see a pretty visual of our FSM when printing, comment out if you don't have it downloaded
+# The rich library can be found here: https://github.com/Textualize/rich
 from rich import print
 test_fsm = FSM()
 print(test_fsm.table)
