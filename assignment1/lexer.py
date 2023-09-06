@@ -2,7 +2,7 @@
 Written by:
 Esteban Escartin
 Roman Guillermo
-Jericho Montec
+Jericho Montecillo
 
 This file contains the code for lexical analysis of a RAT32F source file.
 
