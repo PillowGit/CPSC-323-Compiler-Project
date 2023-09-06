@@ -2,6 +2,7 @@
 Written by:
 Esteban Escartin
 Roman Guillermo
+Jericho Montec
 
 This file contains the code for lexical analysis of a RAT32F source file.
 
@@ -19,10 +20,9 @@ keywords: set = set(['function', 'integer', 'bool', 'real', 'if', 'else', 'endif
 operators: set = set(['=', '==', '!=', '>', '<', '<=', '=>', '+', '-', '*', '/'])
 
 
-# This is an example of what I think a Lexer for our example input may look like
-# This is the example input we are working with:
-# while (fahr <= upper) a = 23.00; [* this is a sample *]
-
+# Our implementation of a Finite State Machine
+# This implementation includes an analysis member function to take in a file path and 
+# turn it into a symbol table
 class FSM:
     def __init__(self):
         # A list of all the symbols our fsm may come across
@@ -113,5 +113,6 @@ class FSM:
 # This library is just to see a pretty visual of our FSM when printing, comment out if you don't have it downloaded
 # The rich library can be found here: https://github.com/Textualize/rich
 from rich import print
+
 test_fsm = FSM()
 print(test_fsm.table)
