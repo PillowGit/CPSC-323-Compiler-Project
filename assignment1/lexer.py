@@ -10,25 +10,35 @@ This file is implemented as a module file for ease of use in future project
 assignments. 
 """
 
+from rich import print
+from collections import namedtuple
+
 # A set containing every separator in RAT32F
-separators: set = set([ '#', '(', ')', ',', '{', '}', ';'])
+separators: set = set(['#', '(', ')', ',', '{', '}', ';'])
 
 # A set containing every keyword in RAT32F
-keywords: set = set(['function', 'integer', 'bool', 'real', 'if', 'else', 'endif', 'ret', 'put', 'get', 'while'])
+keywords: set = set(['function', 'integer', 'bool', 'real',
+                    'if', 'else', 'endif', 'ret', 'put', 'get', 'while'])
 
 # A set containing every operator in RAT32F
-operators: set = set(['=', '==', '!=', '>', '<', '<=', '=>', '+', '-', '*', '/'])
+operators: set = set(
+    ['=', '==', '!=', '>', '<', '<=', '=>', '+', '-', '*', '/'])
+
+# Named Tuple to store tokens
+Token = namedtuple('Token', ['state', 'token'])
 
 
 # Our implementation of a Finite State Machine
-# This implementation includes an analysis member function to take in a file path and 
+# This implementation includes an analysis member function to take in a file path and
 # turn it into a symbol table
 class FSM:
     def __init__(self):
         # A list of all the symbols our fsm may come across
-        self.symbols: set = {'whitespace', 'chr', 'int', 'dot', 'special', 'separator', 'operator', 'comment', 'closecomment'}
+        self.symbols: set = {'whitespace', 'chr', 'int', 'dot',
+                             'special', 'separator', 'operator', 'comment', 'closecomment'}
         # A list of all the possible states for our fsm
-        self.states: set = {'keyword', 'identifier', 'int', 'real', 'operator', 'valid', 'invalid', 'ignore'}
+        self.states: set = {'keyword', 'identifier', 'int',
+                            'real', 'operator', 'valid', 'invalid', 'ignore'}
         # The fsm should always start in a valid state
         self.starting_state: str = 'valid'
         # A list of all of the acceptable states at the end of the program, Note: All states are accepted besides "invalid" which would be a lexical analysis error. We do not care about syntax, just analyzing smybols during this phase
@@ -36,13 +46,13 @@ class FSM:
         # A list to store all the tokens we have analyzed
         self.tokens: list = []
         # Initialize the table of states and transitions
-        self.table: dict = {x : dict() for x in self.states}
+        self.table: dict = {x: dict() for x in self.states}
         self.create_states()
 
     def create_states(self):
         # Note: This table does NOT include keyword states. A keyword will be identified mid syntax analysis. This will be done by
         # checking if an accepted identifier is in the keyword list
-        # Note: We also do NOT include states for 'invalid'. If we recieve an invalid state during lexical analysis, the 
+        # Note: We also do NOT include states for 'invalid'. If we recieve an invalid state during lexical analysis, the
         # compiler should terminate
         del self.table['invalid']
         del self.table['keyword']
@@ -83,36 +93,116 @@ class FSM:
         self.table['operator']['int'] = 'int'
         self.table['operator']['dot'] = 'invalid'
         self.table['operator']['special'] = 'invalid'
-        self.table['operator']['separator'] = 'valid' # Note: we don't care if we have something like '(x+)', that's a job for syntax analysis
+        # Note: we don't care if we have something like '(x+)', that's a job for syntax analysis
+        self.table['operator']['separator'] = 'valid'
         self.table['operator']['operator'] = 'valid'
         self.table['operator']['comment'] = 'ignore'
         self.table['operator']['closecomment'] = 'invalid'
-        # New states depending on if our state is 'valid' 
+        # New states depending on if our state is 'valid'
         self.table['valid']['whitespace'] = 'valid'
         self.table['valid']['chr'] = 'identifier'
         self.table['valid']['int'] = 'int'
         self.table['valid']['dot'] = 'invalid'
         self.table['valid']['special'] = 'invalid'
-        self.table['valid']['separator'] = 'valid' # Note: we don't care if we are given a closed seperated before an opening one. That will be handled in syntax analysis 
-        self.table['valid']['operator'] = 'operator'
+        # Note: we don't care if we are given a closed seperated before an opening one. That will be handled in syntax analysis
+        self.table['valid']['separator'] = 'valid'
+        # CHANGED THIS FROM OPERATOR TO VALID
+        self.table['valid']['operator'] = 'valid'
         self.table['valid']['comment'] = 'ignore'
         self.table['valid']['closecomment'] = 'invalid'
         # New states depending on if our state is 'ignore'
         # Every state besides a new comment will be ignored here, so we can do this in 1 line using dict comprehension and a ternary statement
-        self.table['ignore'] = {x : 'ignore' if x != 'closecomment' else 'valid' for x in self.symbols}
-    
+        self.table['ignore'] = {x: 'ignore' if x !=
+                                'closecomment' else 'valid' for x in self.symbols}
+
     def analyze(self, file_path: str):
         # Open the file and read/store its contents
         file_contents: str = ''
         with open(file_path, 'r') as f:
             file_contents = f.read()
-        # TO DO
-        # Do a bunch of analysis on the text and stuff write logic blah blah
+        n = len(file_contents)
+
+        # Variables to be used throughout the analysis
+        letters: set = set(chr(ord('a') + x) for x in range(26))
+        whitespaces: set = {' ', '\n', '\t'}
+        nums: set = set(x for x in '0123456789')
+
+        # Define a function to get what the current symbol is
+        def check_symbol(ind: int) -> str:
+            # Check for a comment
+            if file_contents[ind] == '[':
+                if ind + 1 < n and file_contents[ind+1] == '*':
+                    return 'comment'
+                else:
+                    return 'special'
+            # Check for closing comment
+            if file_contents[ind] == ']' and file_contents[ind-1] == '*':
+                return 'closecomment'
+            # Check for whitespace
+            elif file_contents[ind] in whitespaces:
+                return 'whitespace'
+            # Check for chr
+            elif file_contents[ind] in letters:
+                return 'chr'
+            # Check for int
+            elif file_contents[ind] in nums:
+                return 'int'
+            # Check for dot
+            elif file_contents[ind] == '.':
+                return 'dot'
+            # Check for seperator
+            elif file_contents[ind] in separators:
+                return 'separator'
+            # Check for operator
+            elif file_contents[ind] in operators:
+                return 'operator'
+            # If none are applicable, this is a special character
+            else:
+                return 'special'
+
+        # Initialize temp variable to store current token
+        curr_token = ''
+        # Before iterating, starting state is valid
+        curr_state = self.starting_state
+
+        for ind, char in enumerate(file_contents):
+            # Find the symbol of the current character
+            curr_symbol = check_symbol(ind)
+            # Add the character to our placeholder variable
+            if char not in whitespaces:
+                curr_token = curr_token + char
+            # Store the old state in case token is finished
+            old_state = curr_state
+            # Change the state to match current state and symbol
+            curr_state = self.table[curr_state][curr_symbol]
+
+            # Get next symbol
+            if ind < n - 1:  # Temp Fix
+                next_symbol = check_symbol(ind + 1)
+
+            # Checks for operators that are more than 2 characters (<= or >=)
+            if curr_symbol == 'operator' and next_symbol == 'operator':
+                continue
+
+            # Checks to see if token is valid
+            if (curr_state == 'valid' and curr_token != '') or (curr_state != 'valid' and (next_symbol == 'operator' or next_symbol == 'separator' or next_symbol == 'comment')):
+                # If valid token, initializes a new token and clears placeholder
+
+                # Checks on the token
+                if curr_token in operators:
+                    old_state = 'operator'
+                elif curr_token in separators:
+                    old_state = 'separator'
+                elif curr_token in keywords:
+                    old_state = 'keyword'
+
+                self.tokens.append(Token(old_state, curr_token))
+                curr_token = ''
 
 
 # This library is just to see a pretty visual of our FSM when printing, comment out if you don't have it downloaded
 # The rich library can be found here: https://github.com/Textualize/rich
-from rich import print
 
 test_fsm = FSM()
-print(test_fsm.table)
+test_fsm.analyze("assignment1/input.txt")
+print(test_fsm.tokens)
