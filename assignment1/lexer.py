@@ -102,7 +102,6 @@ class FSM:
         self.table['operator']['int'] = 'int'
         self.table['operator']['dot'] = 'invalid'
         self.table['operator']['special'] = 'invalid'
-        # Note: we don't care if we have something like '(x+)', that's a job for syntax analysis
         self.table['operator']['separator'] = 'valid'
         self.table['operator']['operator'] = 'valid'
         self.table['operator']['comment'] = 'ignore'
@@ -195,7 +194,11 @@ class FSM:
                 next_symbol = check_symbol(ind + 1)
 
             # Checks for operators that are more than 2 characters (<= or >=)
-            if curr_symbol == 'operator' and next_symbol == 'operator':
+            if curr_symbol == 'operator':
+                if next_symbol != 'operator':
+                    self.tokens.append(Token(curr_symbol, curr_token))
+                    curr_token = ''
+                    curr_state = 'valid'
                 continue
 
             # Checks to see if token is valid
