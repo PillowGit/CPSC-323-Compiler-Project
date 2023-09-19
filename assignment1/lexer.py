@@ -54,9 +54,18 @@ class FSM:
         # checking if an accepted identifier is in the keyword list
         # Note: We also do NOT include states for 'invalid'. If we recieve an invalid state during lexical analysis, the
         # compiler should terminate
-        del self.table['invalid']
         del self.table['keyword']
 
+        # Include transitions from invalid to some valid state
+        self.table['invalid']['whitespace'] = 'valid'
+        self.table['invalid']['chr'] = 'invalid'
+        self.table['invalid']['int'] = 'invalid'
+        self.table['invalid']['dot'] = 'invalid'
+        self.table['invalid']['special'] = 'invalid'
+        self.table['invalid']['separator'] = 'valid'
+        self.table['invalid']['operator'] = 'invalid'
+        self.table['invalid']['comment'] = 'ignore'
+        self.table['invalid']['closecomment'] = 'invalid'
         # New states depending on if our state is 'identifier'
         self.table['identifier']['whitespace'] = 'valid'
         self.table['identifier']['chr'] = 'identifier'
@@ -168,6 +177,11 @@ class FSM:
         for ind, char in enumerate(file_contents):
             # Find the symbol of the current character
             curr_symbol = check_symbol(ind)
+            # If we are analyzing comments, pass until we reach end of comment
+            if curr_state == 'ignore':
+                if curr_symbol == 'closecomment':
+                    curr_state = 'valid'
+                continue
             # Add the character to our placeholder variable
             if char not in whitespaces:
                 curr_token = curr_token + char
@@ -189,7 +203,11 @@ class FSM:
                 # If valid token, initializes a new token and clears placeholder
 
                 # Checks on the token
-                if curr_token in operators:
+                if curr_symbol == 'comment':
+                    curr_token = ''
+                    curr_state = 'ignore'
+                    continue
+                elif curr_token in operators:
                     old_state = 'operator'
                 elif curr_token in separators:
                     old_state = 'separator'
@@ -198,6 +216,10 @@ class FSM:
 
                 self.tokens.append(Token(old_state, curr_token))
                 curr_token = ''
+
+        # Handle unanalyzed text
+        if curr_token != '':
+            self.tokens.append(Token(curr_state, curr_token))
 
 
 # This library is just to see a pretty visual of our FSM when printing, comment out if you don't have it downloaded

@@ -1,1 +1,3 @@
 while (fahr <= upper) a = 23.00; [* this is a sample *]
+while (4 < 1.0) asdfgh = 1abc
+say = 54.6.7
