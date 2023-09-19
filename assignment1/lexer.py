@@ -10,6 +10,8 @@ This file is implemented as a module file for ease of use in future project
 assignments. 
 """
 
+# This library is just to see a pretty visual of our FSM when printing, comment out if you don't have it downloaded
+# The rich library can be found here: https://github.com/Textualize/rich
 from rich import print
 from collections import namedtuple
 
@@ -136,6 +138,9 @@ class FSM:
         nums: set = set(x for x in '0123456789')
 
         # Define a function to get what the current symbol is
+        # Note: This should stay a nested function. While this is less efficient when initializing
+        # a lexical analysis process, it is faster than passing a string representing the entirety
+        # of a file into a member function whenever we want to check a symbol. 
         def check_symbol(ind: int) -> str:
             # Check for a comment
             if file_contents[ind] == '[':
@@ -223,11 +228,3 @@ class FSM:
         # Handle unanalyzed text
         if curr_token != '':
             self.tokens.append(Token(curr_state, curr_token))
-
-
-# This library is just to see a pretty visual of our FSM when printing, comment out if you don't have it downloaded
-# The rich library can be found here: https://github.com/Textualize/rich
-
-test_fsm = FSM()
-test_fsm.analyze("assignment1/input.txt")
-print(test_fsm.tokens)
