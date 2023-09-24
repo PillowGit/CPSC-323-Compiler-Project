@@ -228,3 +228,8 @@ class FSM:
         # Handle unanalyzed text
         if curr_token != '':
             self.tokens.append(Token(curr_state, curr_token))
+    
+    def dump_tokens(self) -> list:
+        # Swap out our token list with a 
+        tmp, self.tokens = self.tokens, []
+        return tmp
