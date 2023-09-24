@@ -125,6 +125,7 @@ class FSM:
         self.table['ignore'] = {x: 'ignore' if x !=
                                 'closecomment' else 'valid' for x in self.symbols}
 
+    # A function that will open the given file and generate tokens for it
     def analyze(self, file_path: str):
         # Open the file and read/store its contents
         file_contents: str = ''
