@@ -1,0 +1,7 @@
+while (true) x = 20;
+[*
+thinsg in heres
+should
+be commented
+*]
+x = 21;
