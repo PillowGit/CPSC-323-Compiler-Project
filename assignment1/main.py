@@ -65,6 +65,7 @@ def clear_excess() -> None:
 def main() -> None:
     # Initialize a Finite State Machine that we will use to analyze every file
     driver_fsm: FSM = FSM()
+
     # Gather all of the .txt files in the current directory
     # Note: All our files containing tokens will end in 'ratout.txt'
     # so we ignore those when gathering all files

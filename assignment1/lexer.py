@@ -26,7 +26,7 @@ keywords: set = set(['function', 'integer', 'bool', 'real',
 operators: set = set(
     ['=', '==', '!=', '>', '<', '<=', '=>', '+', '-', '*', '/'])
 
-# Named Tuple to store tokens
+# Named Tuple template to store tokens
 Token = namedtuple('Token', ['state', 'token'])
 
 
@@ -53,9 +53,7 @@ class FSM:
 
     def create_states(self):
         # Note: This table does NOT include keyword states. A keyword will be identified mid syntax analysis. This will be done by
-        # checking if an accepted identifier is in the keyword list
-        # Note: We also do NOT include states for 'invalid'. If we recieve an invalid state during lexical analysis, the
-        # compiler should terminate
+        # checking if an accepted identifier is in the keyword list before adding it to our list
         del self.table['keyword']
 
         # Include transitions from invalid to some valid state
@@ -68,7 +66,7 @@ class FSM:
         self.table['invalid']['operator'] = 'invalid'
         self.table['invalid']['comment'] = 'ignore'
         self.table['invalid']['closecomment'] = 'invalid'
-        # New states depending on if our state is 'identifier'
+        # Next states depending on if our state is 'identifier'
         self.table['identifier']['whitespace'] = 'valid'
         self.table['identifier']['chr'] = 'identifier'
         self.table['identifier']['int'] = 'identifier'
@@ -78,7 +76,7 @@ class FSM:
         self.table['identifier']['operator'] = 'operator'
         self.table['identifier']['comment'] = 'ignore'
         self.table['identifier']['closecomment'] = 'invalid'
-        # New states depending on if our state is 'int'
+        # Next states depending on if our state is 'int'
         self.table['int']['whitespace'] = 'valid'
         self.table['int']['chr'] = 'invalid'
         self.table['int']['int'] = 'int'
@@ -88,7 +86,7 @@ class FSM:
         self.table['int']['operator'] = 'operator'
         self.table['int']['comment'] = 'ignore'
         self.table['int']['closecomment'] = 'invalid'
-        # New states depending on if our state is 'real'
+        # Next states depending on if our state is 'real'
         self.table['real']['whitespace'] = 'valid'
         self.table['real']['chr'] = 'invalid'
         self.table['real']['int'] = 'real'
@@ -98,7 +96,7 @@ class FSM:
         self.table['real']['operator'] = 'operator'
         self.table['real']['comment'] = 'ignore'
         self.table['real']['closecomment'] = 'invalid'
-        # New states depending on if our state is 'operator'
+        # Next states depending on if our state is 'operator'
         self.table['operator']['whitespace'] = 'ignore'
         self.table['operator']['chr'] = 'identifier'
         self.table['operator']['int'] = 'int'
@@ -108,24 +106,26 @@ class FSM:
         self.table['operator']['operator'] = 'valid'
         self.table['operator']['comment'] = 'ignore'
         self.table['operator']['closecomment'] = 'invalid'
-        # New states depending on if our state is 'valid'
+        # Next states depending on if our state is 'valid'
         self.table['valid']['whitespace'] = 'valid'
         self.table['valid']['chr'] = 'identifier'
         self.table['valid']['int'] = 'int'
         self.table['valid']['dot'] = 'invalid'
         self.table['valid']['special'] = 'invalid'
-        # Note: we don't care if we are given a closed seperated before an opening one. That will be handled in syntax analysis
         self.table['valid']['separator'] = 'valid'
-        # CHANGED THIS FROM OPERATOR TO VALID
+        # Note: An operator is typically 1 or 2 chars, so we do not make this a full state,
+        # we instead transition to 'valid' and store the operator right away
         self.table['valid']['operator'] = 'valid'
         self.table['valid']['comment'] = 'ignore'
         self.table['valid']['closecomment'] = 'invalid'
-        # New states depending on if our state is 'ignore'
-        # Every state besides a new comment will be ignored here, so we can do this in 1 line using dict comprehension and a ternary statement
+        # This 'ignore' state is used when we are looking at a comment. We do not store 
+        # any commented code, so the state will continue being ignored until we reach
+        # a closing comment character
         self.table['ignore'] = {x: 'ignore' if x !=
                                 'closecomment' else 'valid' for x in self.symbols}
 
-    # A function that will open the given file and generate tokens for it
+    # A function that will open the given file path and generate tokens for it
+    # This will not return the tokens that are generated
     def analyze(self, file_path: str):
         # Open the file and read/store its contents
         file_contents: str = ''
@@ -230,6 +230,7 @@ class FSM:
         if curr_token != '':
             self.tokens.append(Token(curr_state, curr_token))
     
+    # A function that will wipe the FSMs token list and return the result
     def dump_tokens(self) -> list:
         # Swap out our token list with a 
         tmp, self.tokens = self.tokens, []
