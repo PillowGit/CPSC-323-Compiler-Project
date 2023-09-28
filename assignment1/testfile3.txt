@@ -1,0 +1,49 @@
+[*
+This is some sample code written in Rat23F
+This will generate tokens using the code in this file
+When `main` is run, the tokens will be written to 
+testfile3_ratout.txt if you select this file for analysis
+
+All comments will be ignored and not stored
+*]
+
+function mul(real num1, real factor) [* Note: "num1" is an invalid identifier and should be an invalid token *]
+{
+    real result;
+    result = num1 * factor;
+    ret result;
+}
+
+#
+    real x, y, z;
+    ) = 0.1;
+    y = 45198.0;
+    z = x * y;
+    while ( z >= 1.0 == true ) 
+    {
+        put(z); [* I have no idea what put does but im pretending as if it acts like print here to test if it finds the keyword *]
+        z = z * x;
+        z === x; [* Note: This operator does not exist and should be an invalid token *]
+    }
+
+    bool 1status; [* Note: "1status" is an invalid identifier and should be an invalid token *]
+    real start;
+    status = false; 
+    get(start);
+    
+
+    while (status == false) 
+    {
+        bool res;
+        res = start < 0;
+        if (res)
+        {
+            start = mul(start, -1.0.0); [* Note: "-1.0.0" is an invalid real and should be an invald token *]
+        } 
+        else
+        {
+            put(start - 1/ 3 *5);
+        }
+        endif;
+    }
+#
