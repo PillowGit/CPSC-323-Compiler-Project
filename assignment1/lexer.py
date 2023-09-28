@@ -18,7 +18,7 @@ from collections import namedtuple
 separators: set = set(['#', '(', ')', ',', '{', '}', ';'])
 
 # A set containing every keyword in RAT32F
-keywords: set = set(['function', 'integer', 'bool', 'real',
+keywords: set = set(['function', 'integer', 'bool', 'real', 'true', 'false',
                     'if', 'else', 'endif', 'ret', 'put', 'get', 'while'])
 
 # A set containing every operator in RAT32F
@@ -194,14 +194,14 @@ class FSM:
             # Change the state to match current state and symbol
             curr_state = self.table[curr_state][curr_symbol]
 
-            # Get next symbol
-            if ind < n - 1:  # Temp Fix
+            # Get next symbol if in range
+            if ind < n - 1: 
                 next_symbol = check_symbol(ind + 1)
 
             # Checks for operators that are more than 2 characters (<= or >=)
             if curr_symbol == 'operator':
                 if next_symbol != 'operator':
-                    self.tokens.append(Token(curr_symbol, curr_token))
+                    self.tokens.append(Token(curr_symbol if curr_token in operators else 'invalid', curr_token))
                     curr_token = ''
                     curr_state = 'valid'
                 continue
@@ -228,6 +228,16 @@ class FSM:
         # Handle unanalyzed text
         if curr_token != '':
             self.tokens.append(Token(curr_state, curr_token))
+        
+        # Handle invalid identifiers and overwritten tokens
+        for i, pair in enumerate(self.tokens):
+                if pair[0] == 'valid':
+                    if pair[1].isnumeric():
+                        self.tokens[i] = Token('int', pair[1])
+                    else:
+                        self.tokens[i] = Token('identifier', pair[1])
+                elif pair[0] == 'identifier' and (pair[1][0].isdigit() or pair[1][-1].isdigit()):
+                    self.tokens[i] = Token('invalid', pair[1])
     
     # A function that will wipe the FSMs token list and return the result
     def dump_tokens(self) -> list:
