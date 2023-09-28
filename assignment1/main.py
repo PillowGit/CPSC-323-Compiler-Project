@@ -1,7 +1,6 @@
 """
 Written by:
 Esteban Escartin
-Roman Guillermo
 Jericho Montecillo
 
 This file is a driver file to test our lexer.py function 
