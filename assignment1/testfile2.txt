@@ -1,0 +1,38 @@
+[*
+This is some sample code written in Rat23F
+This will generate tokens using the code in this file
+When `main` is run, the tokens will be written to 
+testfile2_ratout.txt if you select this file for analysis
+
+All comments will be ignored and not stored
+*]
+
+function confirm_pin(integer vault, integer pin) [* Note: "confirm_pin" is an invalid identifier and should be an invalid token *]
+{
+    bool valid = false;
+
+    if (pin == vault)
+    {
+        valid = true;
+    }
+
+    return valid;
+}
+
+#
+    integer input, vault
+    vault = 12345;
+    bool found = false;
+
+    while (found == false)
+    {
+        get(input);
+        if (input == 0)
+        {
+            return 0;
+        }
+        found = confirm_pin(vault, input); [* Note: "confirm_pin" is an invalid identifier and should be an invalid token *]
+    }
+
+    return 1;
+#
