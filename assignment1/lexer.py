@@ -134,6 +134,8 @@ class FSM:
 
         # Variables to be used throughout the analysis
         letters: set = set(chr(ord('a') + x) for x in range(26))
+        for x in range(26):
+            letters.add(chr(ord('a')+x).upper())
         whitespaces: set = {' ', '\n', '\t'}
         nums: set = set(x for x in '0123456789')
 
