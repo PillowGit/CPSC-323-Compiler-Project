@@ -20,7 +20,7 @@ assignments.
 # This library is just to see a pretty visual of our FSM when printing, comment out if you don't have it downloaded
 # The rich library can be found here: https://github.com/Textualize/rich
 from rich import print
-from collections import namedtuple
+from collections import namedtuple, deque
 
 # A set containing every separator in RAT32F
 separators: set = set(['#', '(', ')', ',', '{', '}', ';'])
@@ -41,7 +41,9 @@ Token = namedtuple('Token', ['state', 'token'])
 # This implementation includes an analysis member function to take in a file path and
 # turn it into a symbol table
 class FSM:
-    def __init__(self):
+    def __init__(self, filename: str):
+        # Store the filename
+        self.filename: str = filename
         # A list of all the symbols our fsm may come across
         self.symbols: set = {'whitespace', 'chr', 'int', 'dot',
                              'special', 'separator', 'operator', 'comment', 'closecomment'}
@@ -57,6 +59,12 @@ class FSM:
         # Initialize the table of states and transitions
         self.table: dict = {x: dict() for x in self.states}
         self.create_states()
+        # Finally, grab the tokens from our target file
+        self.analyze(file_path=filename)
+        # Push into a dq and clear our temp token list
+        self.token_dq: deque = deque(self.tokens)
+        self.tokens = []
+
 
     def create_states(self):
         # Note: This table does NOT include keyword states. A keyword will be identified mid syntax analysis. This will be done by
@@ -145,7 +153,6 @@ class FSM:
             tmp = chr(ord('a') + i)
             letters.add(tmp)
             letters.add(tmp.upper())
-        print(letters)
         whitespaces: set = {' ', '\n', '\t'}
         nums: set = set(x for x in '0123456789')
 
@@ -201,7 +208,6 @@ class FSM:
             # Add the character to our placeholder variable
             if char not in whitespaces:
                 curr_token = curr_token + char
-            print(f'Rocking with {curr_token}')
             # Store the old state in case token is finished
             old_state = curr_state
             # Change the state to match current state and symbol
@@ -242,3 +248,16 @@ class FSM:
         # Handle unanalyzed text
         if curr_token != '':
             self.tokens.append(Token(curr_state, curr_token))
+    
+    def token(self) -> Token:
+        try:
+            return self.token_dq.popleft()
+        except Exception:
+            raise EOFError(f"There are no more tokens in {self.filename}")
+
+a = FSM("sample_input.txt")
+try:
+    while True:
+        print(a.token())
+except Exception as e:
+    print(e)
