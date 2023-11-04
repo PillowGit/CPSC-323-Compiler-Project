@@ -22,9 +22,9 @@ nums: set = set(x for x in '0123456789')
 
 
 class Syntax():
-    def __init__(self, token_list):
+    def __init__(self, fsm):
         self.token_list = [Token('none', 'filler')]
-        self.token_list.extend(token_list.tokens)
+        self.token_list.extend(fsm.tokens)
         self.curr_index = 0
         self.curr_token = self.token_list[self.curr_index]
         self.switch = True
@@ -442,8 +442,8 @@ class Syntax():
     def empty(self):
         return
 
-
-a = FSM("assignment1/testfile1.txt")
+"""
+a = FSM("sample_input.txt")
 try:
     while True:
         print(a.token())
@@ -451,3 +451,4 @@ except Exception as e:
     print(e)
 recursive_descent_parser = Syntax(a)
 recursive_descent_parser.Rat23F(recursive_descent_parser.token_list[0])
+"""
