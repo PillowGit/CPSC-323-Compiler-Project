@@ -19,10 +19,10 @@ assignments.
 
 # This library is just to see a pretty visual of our FSM when printing, comment out if you don't have it downloaded
 # The rich library can be found here: https://github.com/Textualize/rich
-from rich import print
-from collections import namedtuple, deque
 
 # A set containing every separator in RAT32F
+from rich import print
+from collections import namedtuple, deque
 separators: set = set(['#', '(', ')', ',', '{', '}', ';'])
 
 # A set containing every keyword in RAT32F
@@ -63,8 +63,7 @@ class FSM:
         self.analyze(file_path=filename)
         # Push into a dq and clear our temp token list
         self.token_dq: deque = deque(self.tokens)
-        self.tokens = []
-
+        # self.tokens = []
 
     def create_states(self):
         # Note: This table does NOT include keyword states. A keyword will be identified mid syntax analysis. This will be done by
@@ -159,7 +158,7 @@ class FSM:
         # Define a function to get what the current symbol is
         # Note: This should stay a nested function. While this is less efficient when initializing
         # a lexical analysis process, it is faster than passing a string representing the entirety
-        # of a file into a member function whenever we want to check a symbol. 
+        # of a file into a member function whenever we want to check a symbol.
         def check_symbol(ind: int) -> str:
             # Check for a comment
             if file_contents[ind] == '[':
@@ -220,7 +219,8 @@ class FSM:
             # Checks for operators that are more than 2 characters (<= or >=)
             if curr_symbol == 'operator':
                 if next_symbol != 'operator' or curr_token + file_contents[ind+1] not in operators:
-                    if curr_token == '!': curr_state = 'invalid'
+                    if curr_token == '!':
+                        curr_state = 'invalid'
                     self.tokens.append(Token(curr_symbol, curr_token))
                     curr_token = ''
                     curr_state = 'valid'
@@ -248,16 +248,27 @@ class FSM:
         # Handle unanalyzed text
         if curr_token != '':
             self.tokens.append(Token(curr_state, curr_token))
-    
+
+        # Clean up tokens
+        for i in range(len(self.tokens)):
+            if self.tokens[i][1].isalpha() and self.tokens[i][0] not in ['identifier', 'keyword']:
+                self.tokens[i] = Token(
+                    'identifier' if self.tokens[i][1] not in keywords else 'keyword', self.tokens[i][1])
+            elif self.tokens[i][1].isnumeric() and self.tokens[i][0] != 'int':
+                self.tokens[i] = Token('int', self.tokens[i][1])
+
     def token(self) -> Token:
         try:
             return self.token_dq.popleft()
         except Exception:
             raise EOFError(f"There are no more tokens in {self.filename}")
 
-a = FSM("sample_input.txt")
+
+"""
+a = FSM("assignment2/sample_input.txt")
 try:
     while True:
         print(a.token())
 except Exception as e:
     print(e)
+"""
