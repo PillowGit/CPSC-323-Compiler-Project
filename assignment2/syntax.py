@@ -12,6 +12,9 @@ class Syntax():
 
     def print_token(self, val):
         print(f"Token:{val.state}   Lexeme:{val.token}")
+    
+    def print_exception(self):
+        return f"{self.token_list[self.curr_index + 1].token} at index {self.curr_index}"
 
     def set_next(self, val='', amt=0):
         if self.switch == True:
@@ -88,6 +91,8 @@ class Syntax():
             if self.switch:
                 print(
                     "<Function> -> function <Identifier> (<Opt Parameter List>) <Opt Declaration List> <Body>")
+            if self.get_next().state != 'identifier':
+                raise TypeError(f"This token must be an identifier. The token is: " + self.print_exception())
             self.identifier(self.set_next())
             self.set_next()  # '('
             self.opt_parameter_list(self.set_next())
@@ -127,7 +132,11 @@ class Syntax():
     def parameter(self, next):
         if self.switch:
             print("<Parameter> -> <IDs> <Qualifier>")
+        if next.state != 'identifier':
+            raise TypeError(f"This token must be an identifier. The token is: " + self.print_exception())
         self.IDs(next)
+        if self.get_next().token not in qualifiers:
+            raise TypeError(f"This token must be a qualifier. The token is: " + self.print_exception())
         self.qualifier(self.set_next())
 
     def IDs(self, next):
@@ -161,13 +170,19 @@ class Syntax():
         if self.get_next(val=';', amt=1).token not in qualifiers:
             if self.switch:
                 print("<Declaration List> -> <Declaration>;")
+            if next.token not in qualifiers:
+                raise TypeError(f"This token must be a qualifier. The token is: " + self.print_exception())
             self.declaration(next)
             self.set_next()  # ';'
         else:
             if self.switch:
                 print("<Declaration List> -> <Declaration>; <Declaration List>")
+            if next.token not in qualifiers:
+                raise TypeError(f"This token must be a qualifier. The token is: " + self.print_exception())
             self.declaration(next)
             self.set_next()  # ';'
+            if self.get_next().token not in qualifiers:
+                raise TypeError(f"This token must be a qualifier. The token is: " + self.print_exception())
             self.declaration_list(self.set_next())
 
     def declaration(self, next):
@@ -233,6 +248,8 @@ class Syntax():
             if self.switch:
                 print("<Statement> -> <While>")
             self.While(next)
+        else:
+            raise TypeError(f"This token is not acceptable for a statement: " + self.print_exception())
 
     def compound(self, next):
         if self.switch:
@@ -284,7 +301,6 @@ class Syntax():
             self.set_next()  # 'endif'
 
     def Return(self, next):
-        # self.match(next)
         if self.get_next().token == ';':
             if self.switch:
                 print("<Return> -> ret;")
@@ -298,7 +314,6 @@ class Syntax():
     def print(self, next):
         if self.switch:
             print("<Print> -> put ( <Expression> );")
-        # self.match(next)  # 'put'
         self.set_next()  # '('
         self.expression(self.set_next())
         self.set_next()  # ')'
@@ -307,7 +322,6 @@ class Syntax():
     def scan(self, next):
         if self.switch:
             print("<Scan> -> get ( <IDs> );")
-        # self.match(next)  # 'get'
         self.set_next()  # '('
         self.IDs(self.set_next())
         self.set_next()  # ')'
@@ -420,6 +434,8 @@ class Syntax():
         elif next.token == 'false':
             if self.switch:
                 print("<Primary> -> false")
+        else:
+            raise TypeError(f"This token is not acceptable for a primary: " + self.print_exception())
 
     def integer(self, next):
         if self.switch:
