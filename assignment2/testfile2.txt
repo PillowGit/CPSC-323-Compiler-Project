@@ -1,0 +1,34 @@
+[*
+This is some sample code written in Rat23F
+This will create a parse tree for each token.
+When 'main' is run, the tokens and parse trees
+will be written into testfile2_SA_out.txt if you
+select this file for analysis
+*]
+
+function print(num real) real total; {
+    total = num  * num;
+    put(total);
+    ret total;
+}
+
+#
+real num, total;
+bool switch;
+
+switch = true;
+
+num = 1.5;
+
+while (switch == true) {
+    total = print(num);
+    num = num + 1;
+
+    if (num > 10) {
+        switch = false;
+    }
+    endif
+}
+
+ret num;
+#
