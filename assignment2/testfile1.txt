@@ -1,0 +1,25 @@
+[*
+This is some sample code written in Rat23F
+This will create a parse tree for each token.
+When 'main' is run, the tokens and parse trees
+will be written into testfile1_SA_out.txt if you
+select this file for analysis
+*]
+
+#
+integer num, val;
+bool switch;
+real ans;
+
+switch = true;
+
+if (switch == true) {
+    get(num, val);
+    ans = num / (val + 1);
+}
+endif
+
+put(ans);
+
+ret ans;
+#

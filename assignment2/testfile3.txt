@@ -1,0 +1,48 @@
+[*
+This is some sample code written in Rat23F
+This will create a parse tree for each token.
+When 'main' is run, the tokens and parse trees
+will be written into testfile3_SA_out.txt if you
+select this file for analysis
+*]
+
+function divide(num, val integer, switch bool) real ans; {
+    if (switch == true) {
+        ans = num / val;
+    } else {
+        ans = val / num;
+    }
+    endif
+
+    ret ans;
+}
+
+function multiply(num, val integer, switch bool) integer ans; {
+    if (switch == true) {
+        ans = num * val;
+    } else ans = -3;
+    endif
+
+    ret ans;
+}
+
+#
+integer num, val;
+bool switch;
+real ans;
+
+get(num, val, switch);
+
+ans = divide(num, val, switch);
+
+put(ans);
+
+ans = multiply(num, val, switch);
+
+if (ans == -3) {
+    ret 0;
+} else {
+    put(ans);
+}
+endif
+#
