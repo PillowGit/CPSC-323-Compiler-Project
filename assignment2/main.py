@@ -96,6 +96,7 @@ def main() -> None:
             print(output)
             print(f'This will also be written to a file named \'{file_choice[:-4] + "_SA_out.txt"}\'')
             f = open(file_choice[:-4] + "_SA_out.txt", 'w', encoding="utf-8")
+
             f.write(output)
             f.close()
         else:
