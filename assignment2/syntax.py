@@ -1,30 +1,11 @@
 from lexer import *
 
-separators: set = set(['#', '(', ')', ',', '{', '}', ';'])
-
 qualifiers: set = set(['integer', 'bool', 'real'])
 
-# A set containing every keyword in RAT32F
-keywords: set = set(['function', 'integer', 'bool', 'real',
-                    'if', 'else', 'endif', 'ret', 'put', 'get', 'while'])
-
-# A set containing every operator in RAT32F
-operators: set = set(
-    ['=', '==', '!=', '>', '<', '<=', '=>', '+', '-', '*', '/', '!'])
-
-letters: set = set()
-for i in range(26):
-    tmp = chr(ord('a') + i)
-    letters.add(tmp)
-    letters.add(tmp.upper())
-whitespaces: set = {' ', '\n', '\t'}
-nums: set = set(x for x in '0123456789')
-
-
 class Syntax():
-    def __init__(self, token_list):
+    def __init__(self, fsm):
         self.token_list = [Token('none', 'filler')]
-        self.token_list.extend(token_list.tokens)
+        self.token_list.extend(fsm.tokens)
         self.curr_index = 0
         self.curr_token = self.token_list[self.curr_index]
         self.switch = True
@@ -36,7 +17,7 @@ class Syntax():
         if self.switch == True:
             start = self.curr_index
             if val:
-                for ind, _ in enumerate(self.token_list[start + 1:-amt]):
+                for ind, _ in enumerate(self.token_list[start + 1:]):
                     if self.token_list[start + ind + 1].token == val:
                         self.curr_index = start + ind + amt + 1
                         self.curr_token = self.token_list[self.curr_index]
@@ -54,7 +35,7 @@ class Syntax():
     def get_next(self, val='', amt=0):
         start = self.curr_index
         if val:
-            for ind, _ in enumerate(self.token_list[start + 1:-amt]):
+            for ind, _ in enumerate(self.token_list[start + 1:]):
                 if self.token_list[start + ind + 1].state == val or self.token_list[start + ind + 1].token == val:
                     return self.token_list[start + ind + amt + 1]
             return Token('invalid', 'none')
@@ -76,9 +57,8 @@ class Syntax():
         if self.get_next().token in qualifiers:
             self.opt_declaration_list(self.set_next())
             self.statement_list(self.set_next())
-        else:
+        elif self.get_next().token != '#':
             self.statement_list(self.set_next())
-
         self.set_next()  # '#'
 
     def opt_function_def(self, next):
@@ -99,7 +79,7 @@ class Syntax():
             self.function(next)
         else:
             if self.switch:
-                print("<Function Definitions -> <Function> <Function Definitions>")
+                print("<Function Definitions> -> <Function> <Function Definitions>")
             self.function(next)
             self.function_definitions(self.set_next())
 
@@ -204,7 +184,17 @@ class Syntax():
         self.set_next()  # '}'
 
     def statement_list(self, next):
-        if self.get_next(val=';', amt=1).token == '}' or self.get_next(val=';', amt=1).token == '#':
+        if next.token == 'if':
+            if (self.get_next(val='endif', amt=1).token == '}' and self.get_next(val=';', amt=1).token == '}') or self.get_next(val='endif', amt=1).token == '#':
+                if self.switch:
+                    print("<Statement List> -> <Statement>")
+                self.statement(next)
+            else:
+                if self.switch:
+                    print("<Statement List> -> <Statement> <Statement List>")
+                self.statement(next)
+                self.statement_list(self.set_next())
+        elif self.get_next(val=';', amt=1).token == '}' or self.get_next(val=';', amt=1).token == '#':
             if self.switch:
                 print("<Statement List> -> <Statement>")
             self.statement(next)
@@ -399,7 +389,7 @@ class Syntax():
             self.primary(next)
 
     def primary(self, next):
-        if next.state == 'identifier':
+        if next.state == 'identifier' and (next.token != 'true' and next.token != 'false'):
             if self.get_next().token == '(':
                 if self.switch:
                     print("<Primary> -> <Identifier> ( <IDs> )")
@@ -411,7 +401,7 @@ class Syntax():
                 if self.switch:
                     print("<Primary> -> <Identifier>")
                 self.identifier(next)
-        elif next.state == 'int' and '.' in next.token:
+        elif next.state == 'real':
             if self.switch:
                 print("<Primary> -> <Real>")
             self.real(next)
@@ -441,13 +431,3 @@ class Syntax():
 
     def empty(self):
         return
-
-
-a = FSM("assignment1/testfile1.txt")
-try:
-    while True:
-        print(a.token())
-except Exception as e:
-    print(e)
-recursive_descent_parser = Syntax(a)
-recursive_descent_parser.Rat23F(recursive_descent_parser.token_list[0])
