@@ -1,0 +1,5 @@
+#
+int wtf;
+wtf = 7;
+scan(wtf);
+#
