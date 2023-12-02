@@ -40,22 +40,22 @@ def restore_stdout() -> None:
     sys.stdout = sys.__stdout__
 
 def get_txt_files() -> list:
-    return list(filter(lambda x: x[-4:] == '.txt' and '_SA_out.txt' not in x, [file for file in listdir(getcwd())]))
+    return list(filter(lambda x: x[-4:] == '.txt' and '_asm.txt' not in x, [file for file in listdir(getcwd())]))
 
 def print_input_prompt(valid_files: dict) -> None:
     out: str = 40*'-'+'\nPlease select one of the following choices:\n\n'
     for i, f in valid_files.items():
-        out += f'{str(i+1)}. Generate Syntax Analysis for \'{f}\'\n'
+        out += f'{str(i+1)}. Generate assembly for \'{f}\'\n'
     out += 'r. Re-search the current directory for more text files\n'
-    out += 'c. Clear all SA output files\n'
+    out += 'c. Clear all assembly files\n'
     out += 'q. Quit the file program\n'
     print(out)
 
 def clear_excess() -> None:
     newline: str = '\n'
-    excess: list = list(filter(lambda x: x[-11:] == '_SA_out.txt', [file for file in listdir(getcwd())]))
+    excess: list = list(filter(lambda x: x[-11:] == '_asm.txt', [file for file in listdir(getcwd())]))
     if not excess:
-        print("\nCould not find any SA output files to delete\n")
+        print("\nCould not find any assembly files to delete\n")
         return
     print(f'\nThis action will remove the following files:\n{"".join([x+newline for x in excess])}')
     if input("Type y to confirm: ").lower() != 'y':
@@ -71,8 +71,7 @@ def run_SA(filepath: str) -> str:
     rdp.Rat23F(rdp.token_list[0])
     sa_output: str = output_stream.getvalue()
     restore_stdout()
-    ansi_escape = re.compile(r'\x1b[@-_][0-?]*[ -/]*[@-~]')
-    return ansi_escape.sub('', sa_output)
+    return rdp.assembly
 
 def main() -> None:
     txt_file_choices: dict = dict(enumerate(sorted(get_txt_files())))
@@ -93,15 +92,16 @@ def main() -> None:
         elif user_inp.isnumeric() and int(user_inp)-1 in range(len(txt_file_choices)):
             # Ask the FSM to analyze our file 
             file_choice = txt_file_choices[int(user_inp)-1]
-            output: str = run_SA(filepath=file_choice)
-            # Print out our tokens
-            # print(output)
-            """
-            print(f'This will also be written to a file named \'{file_choice[:-4] + "_SA_out.txt"}\'')
-            f = open(file_choice[:-4] + "_SA_out.txt", 'w', encoding="utf-8")
-            f.write(output)
+            output: list = run_SA(filepath=file_choice)
+            print(f'Here is your file, compiled into assembly:')
+            asm_out = ''
+            for i, line in enumerate(output):
+                asm_out += f'{i+1}. {line}\n'
+            print(asm_out)
+            print(f'This will also be written to a file named \'{file_choice[:-4] + "_asm.txt"}\'')
+            f = open(file_choice[:-4] + "_asm.txt", 'w')
+            f.write(asm_out)
             f.close()
-            """
         else:
             print('Invalid input, please try again')
 

@@ -15,7 +15,8 @@ class Syntax():
         self.symbol_table: dict = {}
         #-----------------------------------------------------------------------------------------------
         self.assembly: list = []
-        self.last_jump: int = -1
+        self.while_stack: list = []
+        self.if_stack: list = []
         self.declaring: bool = False
         #-----------------------------------------------------------------------------------------------
 
@@ -333,13 +334,20 @@ class Syntax():
         self.set_next()  # '('
         self.condition(self.set_next())
         self.set_next()  # ')'
+        self.if_stack.append(len(self.assembly)) # -----------------------------------------------------
         self.statement(self.set_next())
-
+        else_jump = len(self.assembly)+1
+        self.assembly.append('LABEL') #-----------------------------------------------------------------
+        
         if found:
             self.set_next()  # 'else
+            self.assembly.insert(self.if_stack.pop(), f'JUMPZ {len(self.assembly)+2}')
             self.statement(self.set_next())
+            self.assembly.append('LABEL')
+            self.assembly.insert(else_jump, f'JUMP {len(self.assembly)+1}')
             self.set_next()  # 'endif'
         else:
+            self.assembly.insert(self.if_stack.pop(), f'JUMPZ {len(self.assembly)+1}')
             self.set_next()  # 'endif'
 
     def Return(self, next):
@@ -388,9 +396,20 @@ class Syntax():
         if self.switch:
             print("<While> -> while ( <Condition> ) <Statement>")
         self.set_next()  # '('
+        self.assembly.append('JUMP empty')
+        self.assembly.append('LABEL')
+        start_while_line = len(self.assembly)
         self.condition(self.set_next())
+        # cut off the condition instructions so we can use them AFTER
+        # to jump backwards for the while to function
+        comparisons = self.assembly[start_while_line:]
+        self.assembly[start_while_line:] = []
         self.set_next()  # ')'
         self.statement(self.set_next())
+        self.assembly.append('LABEL')
+        self.assembly[start_while_line-2] = f'JUMP {len(self.assembly)}'
+        self.assembly.extend(comparisons)
+        self.assembly.append(f'JUMPZ {start_while_line}')
 
     def condition(self, next):
         if self.switch:
@@ -398,6 +417,25 @@ class Syntax():
         self.expression(next)
         self.relop(self.set_next())
         self.expression(self.set_next())
+        #----------------------------------------------------------------------------------------------
+        operation = ''
+        match self.token_list[self.curr_index-2][1]:
+            case '>':
+                operation = 'GRT'
+            case '<':
+                operation = 'LES'
+            case '==':
+                operation = 'EQU'
+            case '!=':
+                operation = 'NEQ'
+            case '>=':
+                operation = 'GEQ'
+            case '<=':
+                operation = 'LEQ'
+            case _:
+                raise RuntimeError(f'{self.token_list[self.curr_index-2]} is not a valid comparison operator')
+        self.assembly.append(operation)
+        #----------------------------------------------------------------------------------------------
 
     def relop(self, next):
         if self.switch:
@@ -509,13 +547,3 @@ class Syntax():
 
     def empty(self):
         return
-
-# TESTING PURPOSES
-# PLEASE ERASE
-fsm: FSM = FSM(filename='test.txt')
-rdp: Syntax = Syntax(fsm)
-
-rdp.Rat23F(rdp.token_list[0])
-print(rdp.symbol_table)
-for line in rdp.assembly:
-    print(line)

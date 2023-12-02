@@ -1,9 +1,16 @@
 #
-integer first, second, third, fourth;
-first = 1+2;
-second = 5-4;
-third = 4/2;
-fourth = 9*10;
-put(first+second+third+fourth);
+integer first;
+first = first + 4;
+
+while (first > 4)
+{
+    if (first > 4)
+    {
+        first = first - 1;
+    }
+    endif
+}
+
+put(first);
 #
 
