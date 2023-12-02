@@ -14,7 +14,6 @@ class Syntax():
         self.switch = True
         self.symbol_table: dict = {}
         self.assembly: list = []
-        print(f'SA started with table {self.token_list}')
 
     def add_symbol(self, symbol):
         if symbol in self.symbol_table:
@@ -186,6 +185,12 @@ class Syntax():
             self.empty()
 
     def declaration_list(self, next):
+        # ----------------------------------------------------------------------------------------------
+        for i in range(self.curr_index, len(self.token_list)):
+            if self.token_list[i][1] == ';': break
+            elif self.token_list[i][0] == 'identifier': self.add_symbol(self.token_list[i][1])
+        # ----------------------------------------------------------------------------------------------
+        
         if self.get_next(val=';', amt=1).token not in qualifiers:
             if self.switch:
                 print("<Declaration List> -> <Declaration>;")
@@ -206,7 +211,7 @@ class Syntax():
 
     def declaration(self, next):
         if self.switch:
-            print("<Declaration> -> <Qualifier> <IDs> IM HERE IM HERE IM HERE", next)
+            print("<Declaration> -> <Qualifier> <IDs>")
         self.qualifier(next)
         self.IDs(self.set_next())
 
@@ -473,3 +478,4 @@ fsm: FSM = FSM(filename='test.txt')
 rdp: Syntax = Syntax(fsm)
 
 rdp.Rat23F(rdp.token_list[0])
+print(rdp.symbol_table)

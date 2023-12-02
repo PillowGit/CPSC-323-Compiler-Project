@@ -1,5 +1,6 @@
 #
-int wtf;
+integer wtf, hey, howdy, urmom;
+bool deez, nuts;
 wtf = 7;
-scan(wtf);
+scan(bruh);
 #
