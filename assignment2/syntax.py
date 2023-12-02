@@ -209,6 +209,16 @@ class Syntax():
                     print("<Statement List> -> <Statement> <Statement List>")
                 self.statement(next)
                 self.statement_list(self.set_next())
+        elif next.token == 'while':
+            if self.get_next(val='}', amt=1).state == 'separator':
+                if self.switch:
+                    print("<Statement List> -> <Statement>")
+                self.statement(next)
+            else:
+                if self.switch:
+                    print("<Statement List> -> <Statement> <Statement List>")
+                self.statement(next)
+                self.statement_list(self.set_next())
         elif self.get_next(val=';', amt=1).token == '}' or self.get_next(val=';', amt=1).token == '#':
             if self.switch:
                 print("<Statement List> -> <Statement>")
