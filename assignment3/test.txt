@@ -1,6 +1,5 @@
 #
-integer wtf, hey, howdy, urmom;
-bool deez, nuts;
-wtf = 7;
-scan(bruh);
+integer first, second, third, fourth;
+put(first);
+get(second, third, fourth);
 #

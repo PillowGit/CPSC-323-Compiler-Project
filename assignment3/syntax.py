@@ -13,7 +13,9 @@ class Syntax():
         self.curr_token = self.token_list[self.curr_index]
         self.switch = True
         self.symbol_table: dict = {}
+        
         self.assembly: list = []
+        self.last_jump: int = -1
 
     def add_symbol(self, symbol):
         if symbol in self.symbol_table:
@@ -342,10 +344,23 @@ class Syntax():
         self.expression(self.set_next())
         self.set_next()  # ')'
         self.set_next()  # ';'
+        # --------------------------------------------------------------------------------------------
+        self.assembly.append('STDOUT')
+        # --------------------------------------------------------------------------------------------
 
     def scan(self, next):
         if self.switch:
             print("<Scan> -> get ( <IDs> );")
+        # --------------------------------------------------------------------------------------------
+        for i in range(self.curr_index+2, len(self.token_list)):
+            token, lexeme = self.token_list[i]
+            if lexeme == ')': break
+            elif token == 'identifier':
+                if lexeme not in self.symbol_table:
+                    raise VariableError(f'{lexeme} was not declared')
+                self.assembly.append('STDIN')
+                self.assembly.append(f'POPM {self.symbol_table[lexeme]}')
+        # --------------------------------------------------------------------------------------------
         self.set_next()  # '('
         self.IDs(self.set_next())
         self.set_next()  # ')'
@@ -464,6 +479,7 @@ class Syntax():
     def integer(self, next):
         if self.switch:
             print(f"<Integer> -> {next.token}")
+            self.assembly.append(f'PUSHI {next[1]}')
 
     def real(self, next):
         if self.switch:
@@ -479,3 +495,5 @@ rdp: Syntax = Syntax(fsm)
 
 rdp.Rat23F(rdp.token_list[0])
 print(rdp.symbol_table)
+for line in rdp.assembly:
+    print(line)
