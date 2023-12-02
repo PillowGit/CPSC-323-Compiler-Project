@@ -53,7 +53,7 @@ def print_input_prompt(valid_files: dict) -> None:
 
 def clear_excess() -> None:
     newline: str = '\n'
-    excess: list = list(filter(lambda x: x[-11:] == '_asm.txt', [file for file in listdir(getcwd())]))
+    excess: list = list(filter(lambda x: x[-8:] == '_asm.txt', [file for file in listdir(getcwd())]))
     if not excess:
         print("\nCould not find any assembly files to delete\n")
         return
