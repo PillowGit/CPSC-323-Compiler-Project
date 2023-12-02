@@ -1,8 +1,24 @@
-[*
-This file is a mix of the sample provided to us in the instructions of the assignment
-and small code snippets for testing parse trees
-*]
+function convertx (x real, y bool)
+bool  k, z;
+real     x;
+{ 
+    if (x > y) 
+       x = false;
+    endif
+    if ( y  != z) 
+       x = true;
+    else y = 123.45;
+    endif
+    ret;
+}
+
 
 #
-a = b + c;
+     integer    low, high, step;
+
+     get (low, high, step);
+     while (low  <=  high)
+        {  put (convertx(low) );
+           low = low + step;
+        } 
 #

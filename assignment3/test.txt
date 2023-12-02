@@ -1,5 +1,9 @@
 #
 integer first, second, third, fourth;
-put(first);
-get(second, third, fourth);
+first = 1+2;
+second = 5-4;
+third = 4/2;
+fourth = 9*10;
+put(first+second+third+fourth);
 #
+

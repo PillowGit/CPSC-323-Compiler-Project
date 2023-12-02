@@ -1,7 +1,7 @@
 ### PUSHI {int}
 Pushes the int to the top of the stack
 ### PUSHM {mem}
-Pushes the memory location *mem* to the top of the stack
+Pushes the value stored at memory location *mem* to the top of the stack
 ### POPM {mem}
 Pops something off the top off the stack, stores it in the *mem* location
 ### STDOUT 

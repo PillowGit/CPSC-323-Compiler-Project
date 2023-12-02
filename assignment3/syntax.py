@@ -13,9 +13,11 @@ class Syntax():
         self.curr_token = self.token_list[self.curr_index]
         self.switch = True
         self.symbol_table: dict = {}
-        
+        #-----------------------------------------------------------------------------------------------
         self.assembly: list = []
         self.last_jump: int = -1
+        self.declaring: bool = False
+        #-----------------------------------------------------------------------------------------------
 
     def add_symbol(self, symbol):
         if symbol in self.symbol_table:
@@ -125,6 +127,13 @@ class Syntax():
     def identifier(self, next):
         if self.switch:
             print(f"<Identifier> -> {next.token}")
+            #-----------------------------------------------------------------------------------------------
+            if not self.declaring:
+                if next[1] not in self.symbol_table:
+                    raise VariableError(f'{next[1]} was not declared')
+                self.assembly.append(f'PUSHM {self.symbol_table[next[1]]}')
+            #-----------------------------------------------------------------------------------------------
+                
 
     def opt_parameter_list(self, next):
         if next.token != ')':
@@ -215,7 +224,9 @@ class Syntax():
         if self.switch:
             print("<Declaration> -> <Qualifier> <IDs>")
         self.qualifier(next)
+        self.declaring = True
         self.IDs(self.set_next())
+        self.declaring = False
 
     def body(self, next):
         if self.switch:
@@ -287,9 +298,14 @@ class Syntax():
     def assign(self, next):
         if self.switch:
             print("<Assign> -> <Identifier> = <Expression>;")
-        self.identifier(next)
+        #-----------------------------------------------------------------------------------------------
+        #self.identifier(next)
+        print(next)
         self.set_next()  # '='
         self.expression(self.set_next())
+        if next[1] not in self.symbol_table: raise VariableError(f'{next[1]} was not declared')
+        else: self.assembly.append(f'POPM {self.symbol_table[next[1]]}')
+        #-----------------------------------------------------------------------------------------------
         self.set_next()  # ';'
 
     def If(self, next):
@@ -362,7 +378,9 @@ class Syntax():
                 self.assembly.append(f'POPM {self.symbol_table[lexeme]}')
         # --------------------------------------------------------------------------------------------
         self.set_next()  # '('
+        self.declaring = True
         self.IDs(self.set_next())
+        self.declaring = False
         self.set_next()  # ')'
         self.set_next()  # ';'
 
@@ -396,11 +414,13 @@ class Syntax():
             if self.switch:
                 print("<Expression Prime> -> + <Term> <Expression Prime>")
             self.term(self.set_next())
+            self.assembly.append('ADD') #--------------------------------------------------------------
             self.expression2(self.set_next())
         elif next.token == '-':
             if self.switch:
                 print("<Expression Prime> -> - <Term> <Expression Prime>")
             self.term(self.set_next())
+            self.assembly.append('SUB') #--------------------------------------------------------------
             self.expression2(self.set_next())
         else:
             if self.switch:
@@ -419,11 +439,13 @@ class Syntax():
             if self.switch:
                 print("<Term Prime> -> * <Factor> <Term Prime>")
             self.factor(self.set_next())
+            self.assembly.append('MUL') #--------------------------------------------------------------
             self.term2(self.set_next())
         elif next.token == '/':
             if self.switch:
                 print("<Term Prime> -> / <Factor> <Term Prime>")
             self.factor(self.set_next())
+            self.assembly.append('DIV') #--------------------------------------------------------------
             self.term2(self.set_next())
         else:
             if self.switch:
