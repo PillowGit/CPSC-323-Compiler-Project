@@ -210,7 +210,7 @@ class Syntax():
                 self.statement(next)
                 self.statement_list(self.set_next())
         elif next.token == 'while':
-            if self.get_next(val='}', amt=1).state == 'separator':
+            if self.get_next(val='}', amt=1).state == 'separator' or self.get_next(val=';', amt=1).token == '#':
                 if self.switch:
                     print("<Statement List> -> <Statement>")
                 self.statement(next)
@@ -249,7 +249,7 @@ class Syntax():
         elif next.token == 'put':
             if self.switch:
                 print("<Statement> -> <Print>")
-            self.print(next)
+            self.Print(next)
         elif next.token == 'get':
             if self.switch:
                 print("<Statement> -> <Scan>")
@@ -321,7 +321,7 @@ class Syntax():
             self.expression(self.set_next())
             self.set_next()  # ';'
 
-    def print(self, next):
+    def Print(self, next):
         if self.switch:
             print("<Print> -> put ( <Expression> );")
         self.set_next()  # '('
