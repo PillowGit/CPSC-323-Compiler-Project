@@ -1,0 +1,315 @@
+<Rat23F> -> <Opt Function Definitions> # <Opt Declaration List> <Statement List> #
+Token:keyword   Lexeme:function
+<Opt Function Definitions> -> <Function Definitions>
+<Function Definitions> -> <Function> <Function Definitions>
+<Function> -> function <Identifier> (<Opt Parameter List>) <Opt Declaration List> <Body>
+Token:identifier   Lexeme:convert
+<Identifier> -> convert
+Token:separator   Lexeme:(
+Token:identifier   Lexeme:fahr
+<Opt Parameter List> -> <Parameter List>
+<Parameter List> -> <Parameter>
+<Parameter> -> <IDs> <Qualifier>
+<IDs> -> <Identifier>
+<Identifier> -> fahr
+Token:keyword   Lexeme:integer
+<Qualifier> -> integer
+Token:separator   Lexeme:)
+Token:separator   Lexeme:{
+<Body> -> { <Statement List> }
+Token:keyword   Lexeme:ret
+<Statement List> -> <Statement>
+<Statement> -> <Return>
+<Return> -> ret <Expression>;
+Token:int   Lexeme:5
+<Expression> -> <Term> <Expression Prime>
+<Term> -> <Factor> <Term Prime>
+<Factor> -> <Primary>
+<Primary> -> <Integer>
+<Integer> -> 5
+Token:operator   Lexeme:*
+<Term Prime> -> * <Factor> <Term Prime>
+Token:separator   Lexeme:(
+<Factor> -> <Primary>
+<Primary> -> ( <Expression> )
+Token:identifier   Lexeme:fahr
+<Expression> -> <Term> <Expression Prime>
+<Term> -> <Factor> <Term Prime>
+<Factor> -> <Primary>
+<Primary> -> <Identifier>
+<Identifier> -> fahr
+Token:operator   Lexeme:-
+<Term Prime> -> ε
+<Expression Prime> -> - <Term> <Expression Prime>
+Token:int   Lexeme:32
+<Term> -> <Factor> <Term Prime>
+<Factor> -> <Primary>
+<Primary> -> <Integer>
+<Integer> -> 32
+Token:separator   Lexeme:)
+<Term Prime> -> ε
+<Expression Prime> -> ε
+Token:operator   Lexeme:/
+<Term Prime> -> / <Factor> <Term Prime>
+Token:int   Lexeme:9
+<Factor> -> <Primary>
+<Primary> -> <Integer>
+<Integer> -> 9
+Token:separator   Lexeme:;
+<Term Prime> -> ε
+<Expression Prime> -> ε
+Token:separator   Lexeme:}
+Token:keyword   Lexeme:function
+<Function Definitions -> <Function>
+<Function> -> function <Identifier> (<Opt Parameter List>) <Opt Declaration List> <Body>
+Token:identifier   Lexeme:convertx
+<Identifier> -> convertx
+Token:separator   Lexeme:(
+Token:identifier   Lexeme:x
+<Opt Parameter List> -> <Parameter List>
+<Parameter List> -> <Parameter>, <Parameter List>
+<Parameter> -> <IDs> <Qualifier>
+<IDs> -> <Identifier>
+<Identifier> -> x
+Token:keyword   Lexeme:real
+<Qualifier> -> real
+Token:separator   Lexeme:,
+Token:identifier   Lexeme:y
+<Parameter List> -> <Parameter>
+<Parameter> -> <IDs> <Qualifier>
+<IDs> -> <Identifier>
+<Identifier> -> y
+Token:keyword   Lexeme:bool
+<Qualifier> -> bool
+Token:separator   Lexeme:)
+Token:keyword   Lexeme:bool
+<Opt Declaration List> -> <Declaration List>
+<Declaration List> -> <Declaration>; <Declaration List>
+<Declaration> -> <Qualifier> <IDs>
+<Qualifier> -> bool
+Token:identifier   Lexeme:k
+<IDs> -> <Identifier>, <IDs>
+<Identifier> -> k
+Token:separator   Lexeme:,
+Token:identifier   Lexeme:z
+<IDs> -> <Identifier>
+<Identifier> -> z
+Token:separator   Lexeme:;
+Token:keyword   Lexeme:real
+<Declaration List> -> <Declaration>;
+<Declaration> -> <Qualifier> <IDs>
+<Qualifier> -> real
+Token:identifier   Lexeme:x
+<IDs> -> <Identifier>
+<Identifier> -> x
+Token:separator   Lexeme:;
+Token:separator   Lexeme:{
+<Body> -> { <Statement List> }
+Token:keyword   Lexeme:if
+<Statement List> -> <Statement> <Statement List>
+<Statement> -> <If>
+<If> -> if ( <Condition> ) <Statement> endif
+Token:separator   Lexeme:(
+Token:identifier   Lexeme:x
+<Condition> -> <Expression> <Relop> <Expression>
+<Expression> -> <Term> <Expression Prime>
+<Term> -> <Factor> <Term Prime>
+<Factor> -> <Primary>
+<Primary> -> <Identifier>
+<Identifier> -> x
+Token:operator   Lexeme:>
+<Term Prime> -> ε
+<Expression Prime> -> ε
+<Relop> -> >
+Token:identifier   Lexeme:y
+<Expression> -> <Term> <Expression Prime>
+<Term> -> <Factor> <Term Prime>
+<Factor> -> <Primary>
+<Primary> -> <Identifier>
+<Identifier> -> y
+Token:separator   Lexeme:)
+<Term Prime> -> ε
+<Expression Prime> -> ε
+Token:identifier   Lexeme:x
+<Statement> -> <Assign>
+<Assign> -> <Identifier> = <Expression>;
+<Identifier> -> x
+Token:operator   Lexeme:=
+Token:identifier   Lexeme:false
+<Expression> -> <Term> <Expression Prime>
+<Term> -> <Factor> <Term Prime>
+<Factor> -> <Primary>
+<Primary> -> false
+Token:separator   Lexeme:;
+<Term Prime> -> ε
+<Expression Prime> -> ε
+Token:keyword   Lexeme:endif
+Token:keyword   Lexeme:if
+<Statement List> -> <Statement> <Statement List>
+<Statement> -> <If>
+<If> -> if ( <Condition> ) <Statement> else <Statement> endif
+Token:separator   Lexeme:(
+Token:identifier   Lexeme:y
+<Condition> -> <Expression> <Relop> <Expression>
+<Expression> -> <Term> <Expression Prime>
+<Term> -> <Factor> <Term Prime>
+<Factor> -> <Primary>
+<Primary> -> <Identifier>
+<Identifier> -> y
+Token:operator   Lexeme:!=
+<Term Prime> -> ε
+<Expression Prime> -> ε
+<Relop> -> !=
+Token:identifier   Lexeme:z
+<Expression> -> <Term> <Expression Prime>
+<Term> -> <Factor> <Term Prime>
+<Factor> -> <Primary>
+<Primary> -> <Identifier>
+<Identifier> -> z
+Token:separator   Lexeme:)
+<Term Prime> -> ε
+<Expression Prime> -> ε
+Token:identifier   Lexeme:x
+<Statement> -> <Assign>
+<Assign> -> <Identifier> = <Expression>;
+<Identifier> -> x
+Token:operator   Lexeme:=
+Token:identifier   Lexeme:true
+<Expression> -> <Term> <Expression Prime>
+<Term> -> <Factor> <Term Prime>
+<Factor> -> <Primary>
+<Primary> -> true
+Token:separator   Lexeme:;
+<Term Prime> -> ε
+<Expression Prime> -> ε
+Token:keyword   Lexeme:else
+Token:identifier   Lexeme:y
+<Statement> -> <Assign>
+<Assign> -> <Identifier> = <Expression>;
+<Identifier> -> y
+Token:operator   Lexeme:=
+Token:real   Lexeme:123.45
+<Expression> -> <Term> <Expression Prime>
+<Term> -> <Factor> <Term Prime>
+<Factor> -> <Primary>
+<Primary> -> <Real>
+<Real> -> 123.45
+Token:separator   Lexeme:;
+<Term Prime> -> ε
+<Expression Prime> -> ε
+Token:keyword   Lexeme:endif
+Token:keyword   Lexeme:ret
+<Statement List> -> <Statement>
+<Statement> -> <Return>
+<Return> -> ret;
+Token:separator   Lexeme:;
+Token:separator   Lexeme:}
+Token:separator   Lexeme:#
+Token:keyword   Lexeme:integer
+<Opt Declaration List> -> <Declaration List>
+<Declaration List> -> <Declaration>;
+<Declaration> -> <Qualifier> <IDs>
+<Qualifier> -> integer
+Token:identifier   Lexeme:low
+<IDs> -> <Identifier>, <IDs>
+<Identifier> -> low
+Token:separator   Lexeme:,
+Token:identifier   Lexeme:high
+<IDs> -> <Identifier>, <IDs>
+<Identifier> -> high
+Token:separator   Lexeme:,
+Token:identifier   Lexeme:step
+<IDs> -> <Identifier>
+<Identifier> -> step
+Token:separator   Lexeme:;
+Token:keyword   Lexeme:get
+<Statement List> -> <Statement> <Statement List>
+<Statement> -> <Scan>
+<Scan> -> get ( <IDs> );
+Token:separator   Lexeme:(
+Token:identifier   Lexeme:low
+<IDs> -> <Identifier>, <IDs>
+<Identifier> -> low
+Token:separator   Lexeme:,
+Token:identifier   Lexeme:high
+<IDs> -> <Identifier>, <IDs>
+<Identifier> -> high
+Token:separator   Lexeme:,
+Token:identifier   Lexeme:step
+<IDs> -> <Identifier>
+<Identifier> -> step
+Token:separator   Lexeme:)
+Token:separator   Lexeme:;
+Token:keyword   Lexeme:while
+<Statement List> -> <Statement>
+<Statement> -> <While>
+<While> -> while ( <Condition> ) <Statement>
+Token:separator   Lexeme:(
+Token:identifier   Lexeme:low
+<Condition> -> <Expression> <Relop> <Expression>
+<Expression> -> <Term> <Expression Prime>
+<Term> -> <Factor> <Term Prime>
+<Factor> -> <Primary>
+<Primary> -> <Identifier>
+<Identifier> -> low
+Token:operator   Lexeme:<=
+<Term Prime> -> ε
+<Expression Prime> -> ε
+<Relop> -> <=
+Token:identifier   Lexeme:high
+<Expression> -> <Term> <Expression Prime>
+<Term> -> <Factor> <Term Prime>
+<Factor> -> <Primary>
+<Primary> -> <Identifier>
+<Identifier> -> high
+Token:separator   Lexeme:)
+<Term Prime> -> ε
+<Expression Prime> -> ε
+Token:separator   Lexeme:{
+<Statement> -> <Compound>
+<Compound> -> { <Statement List> }
+Token:keyword   Lexeme:put
+<Statement List> -> <Statement> <Statement List>
+<Statement> -> <Print>
+<Print> -> put ( <Expression> );
+Token:separator   Lexeme:(
+Token:identifier   Lexeme:convertx
+<Expression> -> <Term> <Expression Prime>
+<Term> -> <Factor> <Term Prime>
+<Factor> -> <Primary>
+<Primary> -> <Identifier> ( <IDs> )
+<Identifier> -> convertx
+Token:separator   Lexeme:(
+Token:identifier   Lexeme:low
+<IDs> -> <Identifier>
+<Identifier> -> low
+Token:separator   Lexeme:)
+Token:separator   Lexeme:)
+<Term Prime> -> ε
+<Expression Prime> -> ε
+Token:separator   Lexeme:;
+Token:identifier   Lexeme:low
+<Statement List> -> <Statement>
+<Statement> -> <Assign>
+<Assign> -> <Identifier> = <Expression>;
+<Identifier> -> low
+Token:operator   Lexeme:=
+Token:identifier   Lexeme:low
+<Expression> -> <Term> <Expression Prime>
+<Term> -> <Factor> <Term Prime>
+<Factor> -> <Primary>
+<Primary> -> <Identifier>
+<Identifier> -> low
+Token:operator   Lexeme:+
+<Term Prime> -> ε
+<Expression Prime> -> + <Term> <Expression Prime>
+Token:identifier   Lexeme:step
+<Term> -> <Factor> <Term Prime>
+<Factor> -> <Primary>
+<Primary> -> <Identifier>
+<Identifier> -> step
+Token:separator   Lexeme:;
+<Term Prime> -> ε
+<Expression Prime> -> ε
+Token:separator   Lexeme:}
+Token:separator   Lexeme:#
