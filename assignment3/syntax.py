@@ -12,8 +12,8 @@ class Syntax():
         self.curr_index = 0
         self.curr_token = self.token_list[self.curr_index]
         self.switch = True
-        self.symbol_table: dict = {}
         #-----------------------------------------------------------------------------------------------
+        self.symbol_table: dict = {}
         self.assembly: list = []
         self.while_stack: list = []
         self.if_stack: list = []
@@ -65,24 +65,16 @@ class Syntax():
             print(
                 "<Rat23F> -> <Opt Function Definitions> # <Opt Declaration List> <Statement List> #")
 
-        # Look for a 'function' lexeme
         if self.get_next(val='function').token != 'none':
             self.opt_function_def(self.set_next('function'))
         elif self.get_next().token == 'function':
             self.opt_function_def(self.set_next())
 
-        # No function found, expect a #. Keep in mind, Rat23F code
-        # uses the # symbols as scope identifiers for main
         self.set_next()  # '#'
 
-        # Qualifiers = bool, real, int
-        # Basically means, if we find a variable declaration line,
-        # look for that declaration list then look for the
-        # list of statements
         if self.get_next().token in qualifiers:
             self.opt_declaration_list(self.set_next())
             self.statement_list(self.set_next())
-        # Look for the statements if the next is not end of main scope
         elif self.get_next().token != '#':
             self.statement_list(self.set_next())
         self.set_next()  # '#'
@@ -128,13 +120,12 @@ class Syntax():
     def identifier(self, next):
         if self.switch:
             print(f"<Identifier> -> {next.token}")
-            #-----------------------------------------------------------------------------------------------
+             #-----------------------------------------------------------------------------------------------
             if not self.declaring:
                 if next[1] not in self.symbol_table:
                     raise VariableError(f'{next[1]} was not declared')
                 self.assembly.append(f'PUSHM {self.symbol_table[next[1]]}')
             #-----------------------------------------------------------------------------------------------
-                
 
     def opt_parameter_list(self, next):
         if next.token != ')':
@@ -247,6 +238,16 @@ class Syntax():
                     print("<Statement List> -> <Statement> <Statement List>")
                 self.statement(next)
                 self.statement_list(self.set_next())
+        elif next.token == 'while':
+            if self.get_next(val='}', amt=1).state == 'separator' or self.get_next(val=';', amt=1).token == '#':
+                if self.switch:
+                    print("<Statement List> -> <Statement>")
+                self.statement(next)
+            else:
+                if self.switch:
+                    print("<Statement List> -> <Statement> <Statement List>")
+                self.statement(next)
+                self.statement_list(self.set_next())
         elif self.get_next(val=';', amt=1).token == '}' or self.get_next(val=';', amt=1).token == '#':
             if self.switch:
                 print("<Statement List> -> <Statement>")
@@ -277,7 +278,7 @@ class Syntax():
         elif next.token == 'put':
             if self.switch:
                 print("<Statement> -> <Print>")
-            self.print(next)
+            self.Print(next)
         elif next.token == 'get':
             if self.switch:
                 print("<Statement> -> <Scan>")
@@ -361,16 +362,14 @@ class Syntax():
             self.expression(self.set_next())
             self.set_next()  # ';'
 
-    def print(self, next):
+    def Print(self, next):
         if self.switch:
             print("<Print> -> put ( <Expression> );")
         self.set_next()  # '('
         self.expression(self.set_next())
         self.set_next()  # ')'
         self.set_next()  # ';'
-        # --------------------------------------------------------------------------------------------
         self.assembly.append('STDOUT')
-        # --------------------------------------------------------------------------------------------
 
     def scan(self, next):
         if self.switch:
@@ -417,7 +416,6 @@ class Syntax():
         self.expression(next)
         self.relop(self.set_next())
         self.expression(self.set_next())
-        #----------------------------------------------------------------------------------------------
         operation = ''
         match self.token_list[self.curr_index-2][1]:
             case '>':
@@ -435,7 +433,6 @@ class Syntax():
             case _:
                 raise RuntimeError(f'{self.token_list[self.curr_index-2]} is not a valid comparison operator')
         self.assembly.append(operation)
-        #----------------------------------------------------------------------------------------------
 
     def relop(self, next):
         if self.switch:
