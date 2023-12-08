@@ -527,9 +527,11 @@ class Syntax():
         elif next.token == 'true':
             if self.switch:
                 print("<Primary> -> true")
+                self.assembly.append('PUSHI 1')
         elif next.token == 'false':
             if self.switch:
                 print("<Primary> -> false")
+                self.assembly.append('PUSHI 0')
         else:
             raise TypeError(f"This token is not acceptable for a primary: " + self.print_exception())
 
