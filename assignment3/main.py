@@ -95,12 +95,14 @@ def main() -> None:
             output: list = run_SA(filepath=file_choice)
             print(f'Here is your file, compiled into assembly:')
             asm_out = ''
+            to_write = ''
             for i, line in enumerate(output):
                 asm_out += f'{i+1}. {line}\n'
+                to_write += f'{line}\n'
             print(asm_out)
             print(f'This will also be written to a file named \'{file_choice[:-4] + "_asm.txt"}\'')
             f = open(file_choice[:-4] + "_asm.txt", 'w')
-            f.write(asm_out)
+            f.write(to_write)
             f.close()
         else:
             print('Invalid input, please try again')

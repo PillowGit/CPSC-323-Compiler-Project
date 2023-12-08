@@ -1,0 +1,10 @@
+#
+[* This file checks for memory locations, equations, and STDOUT *]
+integer first, second, third, fourth, result;
+first = 1;
+fourth = 1;
+second = 4;
+third = 4;
+result = first + second * third + fourth;
+put(result);
+#
